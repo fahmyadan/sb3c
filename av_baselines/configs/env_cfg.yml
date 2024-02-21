@@ -1,0 +1,47 @@
+env_id: 'intersection-v0'
+max_episode_steps: 500
+n_envs : 3
+
+alg_cfg:
+  features_extractor_kwargs:
+    features_dim: 16
+    normalized_image: false
+    shallow: true
+
+
+env_args:
+ observation:
+    type: OccupancyGrid
+    as_image: true
+    observation_config:
+    #   normalize: false
+    #   features:
+    #   - presence
+    #   - x
+    #   - "y"
+    #   - heading
+    #   - vx
+    #   - vy
+    #   - lane
+    #   features_range:
+    #     x:
+    #     - -100
+    #     - 100
+    #     "y":
+    #     - -100
+    #     - 100
+    #     vx:
+    #     - -20
+    #     - 20
+    #     vy:
+    #     - -20
+    #     - 20
+    #   absolute: true
+    #   flatten: false
+    #   observe_intentions: false
+    #   v2v: true
+    #   bev: false
+    #   maximum_range: 200
+
+
+        
