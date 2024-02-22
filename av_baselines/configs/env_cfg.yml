@@ -1,28 +1,43 @@
 env_id: 'intersection-v0'
 max_episode_steps: 500
-n_envs : 3
+n_envs : 4
 
 alg_cfg:
+  n_steps: 256
+  policy: CnnPolicy
+  
+policy_cfg:
   features_extractor_kwargs:
     features_dim: 16
     normalized_image: false
     shallow: true
 
 
+total_timesteps: 100000
+
+
+logging:
+  wandb: true
+  project_name: 'Highway_env'
+  tensorboard_log: 'logs'
+
 env_args:
- observation:
+  offroad_terminal: true
+  destination: 'o1'
+
+  observation:
     type: OccupancyGrid
     as_image: true
     observation_config:
     #   normalize: false
-    #   features:
-    #   - presence
-    #   - x
-    #   - "y"
-    #   - heading
-    #   - vx
-    #   - vy
-    #   - lane
+      features:
+        - presence
+        - vx
+        - vy
+        - on_road
+      absolute: false
+
+
     #   features_range:
     #     x:
     #     - -100
