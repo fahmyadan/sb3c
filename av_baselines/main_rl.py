@@ -10,6 +10,10 @@ from sb3.stable_baselines3.common.vec_env.util import copy_obs_dict, dict_to_obs
 import numpy as np
 import torch
 from collections import OrderedDict
+import wandb
+from wandb.integration.sb3 import WandbCallback
+from copy import deepcopy
+
 
 def parse_arguments():
     # Create the parser
@@ -66,13 +70,30 @@ def update_vec_buffers(vec_env):
 
     vec_env.keys, shapes, dtypes = obs_space_info(vec_env.observation_space)
     vec_env.buf_obs = OrderedDict([(k, np.zeros((vec_env.num_envs, *tuple(shapes[k])), dtype=dtypes[k])) for k in vec_env.keys])
-    
+
+def wanb_init(alg_cfg, log_cfg):
+    env_name = {'env_name':env_id}
+    alg_cfg = deepcopy(alg_cfg)
+    alg_cfg.update(env_name)
+
+    run = wandb.init(project=log_cfg['project_name'], config=alg_cfg, sync_tensorboard=True, monitor_gym=True)
+
+    return run 
 
 if __name__ == "__main__":
     args = parse_arguments()
     env_cfg = parse_yaml_file(args.env_config)
+    global env_id
     env_id = env_cfg['env_id']
     env_kwargs = env_cfg['env_args']
+    logging_args = env_cfg['logging']
+
+    if logging_args['wandb']:
+        run = wanb_init(env_cfg['alg_cfg'], logging_args)
+        log_dir = logging_args['tensorboard_log']
+        log_dir = log_dir + f'/{run.id}'  
+    else: 
+        run = None 
 
     vec_env = make_vec_env(env_id, n_envs=env_cfg['n_envs'])
     vec_env = update_env_config(vec_env, env_kwargs)
@@ -80,8 +101,13 @@ if __name__ == "__main__":
     update_vec_buffers(vec_env)
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = PPO("CnnPolicy", vec_env, verbose=2, policy_kwargs= env_cfg['alg_cfg'], device=device)
-    model.learn(total_timesteps=500)
-    model.save("intersection_env")
+    model = PPO(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
+    model.learn(total_timesteps=env_cfg['total_timesteps'],callback=WandbCallback(
+        gradient_save_freq=100,
+        model_save_path=f"models/{run.id}",
+        verbose=2,
+    ))
+    if run is not None: 
+        run.finish()
 
     print('check')
