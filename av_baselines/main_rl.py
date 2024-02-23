@@ -94,6 +94,7 @@ if __name__ == "__main__":
         log_dir = log_dir + f'/{run.id}'  
     else: 
         run = None 
+        log_dir = None
 
     vec_env = make_vec_env(env_id, n_envs=env_cfg['n_envs'])
     vec_env = update_env_config(vec_env, env_kwargs)
@@ -102,11 +103,20 @@ if __name__ == "__main__":
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = PPO(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
-    model.learn(total_timesteps=env_cfg['total_timesteps'],callback=WandbCallback(
+  
+    if run: 
+        model_save_path = f"models/{run.id}"
+        wandb_cb = WandbCallback(
         gradient_save_freq=100,
-        model_save_path=f"models/{run.id}",
+        model_save_path=model_save_path,
         verbose=2,
-    ))
+    )
+    else:
+        wandb_cb = None 
+        model_save_path = None 
+
+
+    model.learn(total_timesteps=env_cfg['total_timesteps'],callback=wandb_cb)
     if run is not None: 
         run.finish()
 
