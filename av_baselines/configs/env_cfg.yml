@@ -3,7 +3,7 @@ max_episode_steps: 500
 n_envs : 3
 
 alg_cfg:
-  n_steps: 256
+  n_steps: 2048
   policy: CustomCnnPolicy
   
 policy_cfg:
@@ -15,13 +15,13 @@ policy_cfg:
     features_dim: 256
     normalized_image: false
     shallow: true
-    n_rnn: 5
+    n_rnn: 10
     hidden_size: 5
     n_envs: 3
     custom: true
 
 
-total_timesteps: 100000
+total_timesteps: 1000000
 
 
 logging:
