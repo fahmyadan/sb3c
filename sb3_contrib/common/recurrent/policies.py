@@ -10,8 +10,9 @@ from stable_baselines3.common.torch_layers import (
     CombinedExtractor,
     FlattenExtractor,
     MlpExtractor,
-    NatureCNN,
+    # NatureCNN,
 )
+from sb3.stable_baselines3.common.torch_layers import NatureCNN
 from stable_baselines3.common.type_aliases import Schedule
 from stable_baselines3.common.utils import zip_strict
 from torch import nn
