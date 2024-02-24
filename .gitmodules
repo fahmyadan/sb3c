@@ -1,3 +1,6 @@
 [submodule "sb3"]
 	path = av_baselines/sb3
 	url = git@github.com:fahmyadan/sb3.git
+[submodule "av_baselines/sb3c"]
+	path = av_baselines/sb3c
+	url = git@github.com:fahmyadan/sb3c.git

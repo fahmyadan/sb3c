@@ -7,6 +7,7 @@ import gymnasium as gym
 from sb3.stable_baselines3.common.env_util import make_vec_env
 from sb3.stable_baselines3.ppo.ppo import PPO
 from sb3.stable_baselines3.common.vec_env.util import copy_obs_dict, dict_to_obs, obs_space_info
+from sb3c.sb3_contrib.ppo_recurrent.ppo_recurrent import RecurrentPPO
 import numpy as np
 import torch
 from collections import OrderedDict
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     update_vec_buffers(vec_env)
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = PPO(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
+    model = RecurrentPPO(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
   
     if run: 
         model_save_path = f"models/{run.id}"
