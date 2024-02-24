@@ -25,6 +25,8 @@ keys/
 /env
 /venv
 
+*.zip
+wandb/*
 
 *.sublime-project
 *.sublime-workspace
