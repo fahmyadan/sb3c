@@ -3,19 +3,19 @@ max_episode_steps: 500
 n_envs : 3
 
 alg_cfg:
-  n_steps: 2048
-  policy: CnnLstmPolicy
+  n_steps: 512
+  policy: MlpLstmPolicy
   
 policy_cfg:
-  # net_arch: 
-    # pi: [2421, 64]
-    # vf: [2421,64]
+  net_arch: 
+    pi: [256, 128, 64]
+    vf: [256,128, 64]
   # features_extractor_class: NatureCNN
   features_extractor_kwargs:
   #   shallow: true
   #   features_dim: 256
   #   normalized_image: false
-    shallow: true
+#    shallow: true
   lstm_hidden_size: 256
   n_lstm_layers: 10
   # lstm_kwargs:
@@ -39,16 +39,19 @@ env_args:
   destination: 'o1'
 
   observation:
-    type: OccupancyGrid
+    type: Kinematics
     as_image: true
     observation_config:
     #   normalize: false
-      features:
-        - presence
-        - vx
-        - vy
-        - on_road
-      absolute: false
+    features:
+      - presence
+      - vx
+      - vy
+     # - on_road
+      - lane_id
+      - heading
+    absolute: false
+    observe_intention: true
 
 
     #   features_range:
