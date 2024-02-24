@@ -4,3 +4,6 @@
 [submodule "av_baselines/sb3c"]
 	path = av_baselines/sb3c
 	url = git@github.com:fahmyadan/sb3c.git
+[submodule "av_baselines/envs/HighwayEnv"]
+	path = av_baselines/envs/HighwayEnv
+	url = git@github.com:fahmyadan/HighwayEnv.git
