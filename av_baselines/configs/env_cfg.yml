@@ -4,21 +4,26 @@ n_envs : 3
 
 alg_cfg:
   n_steps: 2048
-  policy: CustomCnnPolicy
+  policy: CnnLstmPolicy
   
 policy_cfg:
-  net_arch: 
+  # net_arch: 
     # pi: [2421, 64]
     # vf: [2421,64]
-  features_extractor_class: TemporalCNN
+  # features_extractor_class: NatureCNN
   features_extractor_kwargs:
-    features_dim: 256
-    normalized_image: false
+  #   shallow: true
+  #   features_dim: 256
+  #   normalized_image: false
     shallow: true
-    n_rnn: 10
-    hidden_size: 5
-    n_envs: 3
-    custom: true
+  lstm_hidden_size: 256
+  n_lstm_layers: 10
+  # lstm_kwargs:
+  #   batch_first: true
+  #   n_rnn: 10
+  #   hidden_size: 5
+  #   n_envs: 3
+  #   custom: true
 
 
 total_timesteps: 1000000
