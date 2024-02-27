@@ -6,8 +6,10 @@ import yaml
 import gymnasium as gym
 from sb3.stable_baselines3.common.env_util import make_vec_env
 from sb3.stable_baselines3.ppo.ppo import PPO
+from sb3.stable_baselines3.sac.sac import SAC
 from sb3.stable_baselines3.common.vec_env.util import copy_obs_dict, dict_to_obs, obs_space_info
 from sb3c.sb3_contrib.ppo_recurrent.ppo_recurrent import RecurrentPPO
+from sb3.stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 import numpy as np
 import torch
 from collections import OrderedDict
@@ -66,6 +68,7 @@ def update_env_spaces(vec_env):
         env.define_spaces()
     
     vec_env.observation_space = env.observation_space
+    vec_env.action_space = env.action_space
 
 def update_vec_buffers(vec_env):
 
@@ -89,21 +92,23 @@ if __name__ == "__main__":
     env_kwargs = env_cfg['env_args']
     logging_args = env_cfg['logging']
 
-    if logging_args['wandb']:
-        run = wanb_init(env_cfg['alg_cfg'], logging_args)
-        log_dir = logging_args['tensorboard_log']
-        log_dir = log_dir + f'/{run.id}'  
-    else: 
-        run = None 
-        log_dir = None
-
     vec_env = make_vec_env(env_id, n_envs=env_cfg['n_envs'])
     vec_env = update_env_config(vec_env, env_kwargs)
     update_env_spaces(vec_env)
     update_vec_buffers(vec_env)
+
+    if logging_args['wandb']:
+        run = wanb_init(env_cfg['alg_cfg'], logging_args)
+        log_dir = logging_args['tensorboard_log']
+        log_dir = log_dir + f'/{run.id}'
+        vec_env = VecVideoRecorder(vec_env, f'videos/{run.id}', record_video_trigger=lambda x: x % 1000 ==0 )  
+    else: 
+        run = None 
+        log_dir = None
+
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = RecurrentPPO(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
+    model = SAC(env=vec_env, verbose=2, policy_kwargs= env_cfg['policy_cfg'], device=device,tensorboard_log=log_dir, **env_cfg['alg_cfg'])
   
     if run: 
         model_save_path = f"models/{run.id}"
